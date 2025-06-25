@@ -24,14 +24,14 @@ local Input = cloneref(game:GetService("UserInputService"))
 local HoldingCtrl = false
 local HoldingShift = false
 
-local DexOutput = Instance.new("Folder")
-DexOutput.Name = "Output"
-local DexOutputMain = Instance.new("ScreenGui", DexOutput)
-DexOutputMain.Name = "Dex Output"
+local Dev4Output = Instance.new("Folder")
+Dev4Output.Name = "Output"
+local Dev4OutputMain = Instance.new("ScreenGui", Dev4Output)
+Dev4OutputMain.Name = "Dev4 Output"
 
 function print(...)
 	local Obj = Instance.new("Dialog")
-	Obj.Parent = DexOutputMain
+	Obj.Parent = Dev4OutputMain
 	Obj.Name = ""
 	for i,v in pairs({...}) do
 		Obj.Name = Obj.Name .. tostring(v) .. " "
@@ -234,7 +234,7 @@ local NODE_EXPANDED       = 166
 local NODE_COLLAPSED_OVER = 179
 local NODE_EXPANDED_OVER  = 180
 
-local ExplorerIndex = {
+local ExplorerInDev4 = {
 	["Accessory"] = 32;
 	["Accoutrement"] = 32;
 	["AdService"] = 73;
@@ -482,11 +482,11 @@ function createDDown(dBut, callback,...)
 	local base = dBut
 	for i,v in pairs(slots) do
 		local newOption = base:Clone()
-		newOption.ZIndex = 5
+		newOption.ZInDev4 = 5
 		newOption.Name = "Option "..tostring(i)
 		newOption.Parent = base.Parent.Parent.Parent
 		newOption.BackgroundTransparency = 0
-		newOption.ZIndex = 2
+		newOption.ZInDev4 = 2
 		table.insert(activeOptions,newOption)
 		newOption.Position = UDim2.new(-0.4, dBut.Position.X.Offset, dBut.Position.Y.Scale, dBut.Position.Y.Offset + (#activeOptions * dBut.Size.Y.Offset))
 		newOption.Text = slots[i]
@@ -521,28 +521,28 @@ function GetScreen(screen)
 end
 
 do
-	local ZIndexLock = {}
-	-- Sets the ZIndex of an object and its descendants. Objects are locked so
-	-- that SetZIndexOnChanged doesn't spawn multiple threads that set the
-	-- ZIndex of the same object.
-	function SetZIndex(object,z)
-		if not ZIndexLock[object] then
-			ZIndexLock[object] = true
+	local ZInDev4Lock = {}
+	-- Sets the ZInDev4 of an object and its descendants. Objects are locked so
+	-- that SetZInDev4OnChanged doesn't spawn multiple threads that set the
+	-- ZInDev4 of the same object.
+	function SetZInDev4(object,z)
+		if not ZInDev4Lock[object] then
+			ZInDev4Lock[object] = true
 			if object:IsA'GuiObject' then
-				object.ZIndex = z
+				object.ZInDev4 = z
 			end
 			local children = object:GetChildren()
 			for i = 1,#children do
-				SetZIndex(children[i],z)
+				SetZInDev4(children[i],z)
 			end
-			ZIndexLock[object] = nil
+			ZInDev4Lock[object] = nil
 		end
 	end
 
-	function SetZIndexOnChanged(object)
+	function SetZInDev4OnChanged(object)
 		return object.Changed:connect(function(p)
-			if p == "ZIndex" then
-				SetZIndex(object,object.ZIndex)
+			if p == "ZInDev4" then
+				SetZInDev4(object,object.ZInDev4)
 			end
 		end)
 	end
@@ -566,8 +566,8 @@ local Icon do
 		end
 	end
 
-	function Icon(IconFrame,index)
-		local row,col = iconDehash(index)
+	function Icon(IconFrame,inDev4)
+		local row,col = iconDehash(inDev4)
 		local mapSize = Vector2.new(256,256)
 		local pad,border = 2,1
 		local iconSize = 16
@@ -729,38 +729,38 @@ do
 	end
 
 	local mt = {
-		__index = {
+		__inDev4 = {
 			GetScrollPercent = function(self)
-				return self.ScrollIndex/(self.TotalSpace-self.VisibleSpace)
+				return self.ScrollInDev4/(self.TotalSpace-self.VisibleSpace)
 			end;
 			CanScrollDown = function(self)
-				return self.ScrollIndex + self.VisibleSpace < self.TotalSpace
+				return self.ScrollInDev4 + self.VisibleSpace < self.TotalSpace
 			end;
 			CanScrollUp = function(self)
-				return self.ScrollIndex > 0
+				return self.ScrollInDev4 > 0
 			end;
 			ScrollDown = function(self)
-				self.ScrollIndex = self.ScrollIndex + self.PageIncrement
+				self.ScrollInDev4 = self.ScrollInDev4 + self.PageIncrement
 				self:Update()
 			end;
 			ScrollUp = function(self)
-				self.ScrollIndex = self.ScrollIndex - self.PageIncrement
+				self.ScrollInDev4 = self.ScrollInDev4 - self.PageIncrement
 				self:Update()
 			end;
-			ScrollTo = function(self,index)
-				self.ScrollIndex = index
+			ScrollTo = function(self,inDev4)
+				self.ScrollInDev4 = inDev4
 				self:Update()
 			end;
 			SetScrollPercent = function(self,percent)
-				self.ScrollIndex = math.floor((self.TotalSpace - self.VisibleSpace)*percent + 0.5)
+				self.ScrollInDev4 = math.floor((self.TotalSpace - self.VisibleSpace)*percent + 0.5)
 				self:Update()
 			end;
 		};
 	}
-	mt.__index.CanScrollRight = mt.__index.CanScrollDown
-	mt.__index.CanScrollLeft = mt.__index.CanScrollUp
-	mt.__index.ScrollLeft = mt.__index.ScrollUp
-	mt.__index.ScrollRight = mt.__index.ScrollDown
+	mt.__inDev4.CanScrollRight = mt.__inDev4.CanScrollDown
+	mt.__inDev4.CanScrollLeft = mt.__inDev4.CanScrollUp
+	mt.__inDev4.ScrollLeft = mt.__inDev4.ScrollUp
+	mt.__inDev4.ScrollRight = mt.__inDev4.ScrollDown
 
 	function ScrollBar(horizontal)
 		-- create row scroll bar
@@ -830,7 +830,7 @@ do
 
 		local Class = setmetatable({
 			GUI = ScrollFrame;
-			ScrollIndex = 0;
+			ScrollInDev4 = 0;
 			VisibleSpace = 0;
 			TotalSpace = 0;
 			PageIncrement = 1;
@@ -865,17 +865,17 @@ do
 		local function Update()
 			local t = Class.TotalSpace
 			local v = Class.VisibleSpace
-			local s = Class.ScrollIndex
+			local s = Class.ScrollInDev4
 			if v <= t then
 				if s > 0 then
 					if s + v > t then
-						Class.ScrollIndex = t - v
+						Class.ScrollInDev4 = t - v
 					end
 				else
-					Class.ScrollIndex = 0
+					Class.ScrollInDev4 = 0
 				end
 			else
-				Class.ScrollIndex = 0
+				Class.ScrollInDev4 = 0
 			end
 
 			if Class.UpdateCallback then
@@ -911,7 +911,7 @@ do
 		end
 		Class.Update = Update
 
-		SetZIndexOnChanged(ScrollFrame)
+		SetZInDev4OnChanged(ScrollFrame)
 
 		local MouseDrag = Create('ImageButton',{
 			Name = "MouseDrag";
@@ -920,7 +920,7 @@ do
 			Transparency = 1;
 			AutoButtonColor = false;
 			Active = true;
-			ZIndex = 10;
+			ZInDev4 = 10;
 		})
 
 		local scrollEventID = 0
@@ -985,19 +985,19 @@ do
 				end)
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if x > ScrollThumbFrame.AbsolutePosition.x then
-					Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
+					Class:ScrollTo(Class.ScrollInDev4 + Class.VisibleSpace)
 					wait(0.2)
 					while scrollEventID == current do
 						if x < ScrollThumbFrame.AbsolutePosition.x + ScrollThumbFrame.AbsoluteSize.x then break end
-						Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
+						Class:ScrollTo(Class.ScrollInDev4 + Class.VisibleSpace)
 						wait()
 					end
 				else
-					Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
+					Class:ScrollTo(Class.ScrollInDev4 - Class.VisibleSpace)
 					wait(0.2)
 					while scrollEventID == current do
 						if x > ScrollThumbFrame.AbsolutePosition.x then break end
-						Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
+						Class:ScrollTo(Class.ScrollInDev4 - Class.VisibleSpace)
 						wait()
 					end
 				end
@@ -1015,19 +1015,19 @@ do
 				end)
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if y > ScrollThumbFrame.AbsolutePosition.y then
-					Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
+					Class:ScrollTo(Class.ScrollInDev4 + Class.VisibleSpace)
 					wait(0.2)
 					while scrollEventID == current do
 						if y < ScrollThumbFrame.AbsolutePosition.y + ScrollThumbFrame.AbsoluteSize.y then break end
-						Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
+						Class:ScrollTo(Class.ScrollInDev4 + Class.VisibleSpace)
 						wait()
 					end
 				else
-					Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
+					Class:ScrollTo(Class.ScrollInDev4 - Class.VisibleSpace)
 					wait(0.2)
 					while scrollEventID == current do
 						if y > ScrollThumbFrame.AbsolutePosition.y then break end
-						Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
+						Class:ScrollTo(Class.ScrollInDev4 - Class.VisibleSpace)
 						wait()
 					end
 				end
@@ -1131,11 +1131,11 @@ local CurrentRemoteWindow
 
 local lastSelectedNode
 
-local DexStorage
-local DexStorageMain
-local DexStorageEnabled
+local Dev4Storage
+local Dev4StorageMain
+local Dev4StorageEnabled
 
-if saveinstance then DexStorageEnabled = true end
+if saveinstance then Dev4StorageEnabled = true end
 
 local _decompile = decompile;
 
@@ -1147,11 +1147,11 @@ function decompile(s, ...)
 	end 
 end
 
-if DexStorageEnabled then
-	DexStorage = Instance.new("Folder")
-	DexStorage.Name = "Dex"
-	DexStorageMain = Instance.new("Folder",DexStorage)
-	DexStorageMain.Name = "DexStorage"
+if Dev4StorageEnabled then
+	Dev4Storage = Instance.new("Folder")
+	Dev4Storage.Name = "Dev4"
+	Dev4StorageMain = Instance.new("Folder",Dev4Storage)
+	Dev4StorageMain.Name = "Dev4Storage"
 end
 
 local RunningScriptsStorage
@@ -1162,7 +1162,7 @@ if getscripts then RunningScriptsStorageEnabled = true end
 
 if RunningScriptsStorageEnabled then
 	RunningScriptsStorage = Instance.new("Folder")
-	RunningScriptsStorage.Name = "Dex Internal Storage"
+	RunningScriptsStorage.Name = "Dev4 Internal Storage"
 	RunningScriptsStorageMain = Instance.new("Folder", RunningScriptsStorage)
 	RunningScriptsStorageMain.Name = "Running Scripts"
 end
@@ -1175,7 +1175,7 @@ if getloadedmodules then LoadedModulesStorageEnabled = true end
 
 if LoadedModulesStorageEnabled then
 	LoadedModulesStorage = Instance.new("Folder")
-	LoadedModulesStorage.Name = "Dex Internal Storage"
+	LoadedModulesStorage.Name = "Dev4 Internal Storage"
 	LoadedModulesStorageMain = Instance.new("Folder", LoadedModulesStorage)
 	LoadedModulesStorageMain.Name = "Loaded Modules"
 end
@@ -1188,7 +1188,7 @@ if getnilinstances then NilStorageEnabled = true end
 
 if NilStorageEnabled then
 	NilStorage = Instance.new("Folder")
-	NilStorage.Name = "Dex Internal Storage"
+	NilStorage.Name = "Dev4 Internal Storage"
 	NilStorageMain = Instance.new("Folder",NilStorage)
 	NilStorageMain.Name = "Nil Instances"
 end
@@ -1252,7 +1252,7 @@ local explorerFilter = 	Create('TextBox',{
 });
 explorerFilter.Parent = headerFrame
 
-SetZIndexOnChanged(explorerPanel)
+SetZInDev4OnChanged(explorerPanel)
 
 local function CreateColor3(r, g, b) return Color3.new(r/255,g/255,b/255) end
 
@@ -1446,7 +1446,7 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 		menu.MidImage = "rbxasset://textures/blackBkg_square.png"
 		menu.BottomImage = "rbxasset://textures/blackBkg_square.png"
 		menu.Active = true
-		menu.ZIndex = 5
+		menu.ZInDev4 = 5
 		menu.Parent = frame
 		
 		--local parentFrameHeight = script.Parent.List.Size.Y.Offset
@@ -1466,7 +1466,7 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 			end,1)
 			option.Size = UDim2.new(1, 0, 0, 20)
 			option.Position = UDim2.new(0, 0, 0, (i - 1) * DropDown.Height)
-			option.ZIndex = menu.ZIndex
+			option.ZInDev4 = menu.ZInDev4
 			option.Parent = menu
 		end
 	end
@@ -1520,7 +1520,7 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 		menu.MidImage = "rbxasset://textures/blackBkg_square.png"
 		menu.BottomImage = "rbxasset://textures/blackBkg_square.png"
 		menu.Active = true
-		menu.ZIndex = 5
+		menu.ZInDev4 = 5
 		menu.Parent = frame
 		
 		--local parentFrameHeight = script.Parent.List.Size.Y.Offset
@@ -1553,7 +1553,7 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 			end,2)
 			option.Size = UDim2.new(1, 0, 0, 20)
 			option.Position = UDim2.new(0, 0, 0, (i - 1) * DropDown.Height)
-			option.ZIndex = menu.ZIndex
+			option.ZInDev4 = menu.ZInDev4
 			option.Parent = menu
 		end
 	end
@@ -1617,10 +1617,10 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 	button.Text = text
 	
 	if insObj == 1 then
-		local newIcon = Icon(nil,ExplorerIndex[text] or 0)
+		local newIcon = Icon(nil,ExplorerInDev4[text] or 0)
 		newIcon.Position = UDim2.new(0,0,0,2)
 		newIcon.Size = UDim2.new(0,16,0,16)
-		newIcon.IconMap.ZIndex = 5
+		newIcon.IconMap.ZInDev4 = 5
 		newIcon.Parent = button
 		button.Text = "     "..button.Text
 	elseif insObj == 2 then
@@ -1708,7 +1708,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 		menu.BorderColor3 = DropDown.BorderColor
 		menu.BorderSizePixel = DropDown.BorderSizePixel
 		menu.Active = true
-		menu.ZIndex = 5
+		menu.ZInDev4 = 5
 		menu.Parent = frame
 		
 		--local parentFrameHeight = script.Parent.List.Size.Y.Offset
@@ -1728,7 +1728,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 			end)
 			option.Size = UDim2.new(1, 0, 0, 20)
 			option.Position = UDim2.new(0, 0, 0, (i - 1) * DropDown.Height)
-			option.ZIndex = menu.ZIndex
+			option.ZInDev4 = menu.ZInDev4
 			option.Parent = menu
 		end
 	end
@@ -1860,9 +1860,9 @@ local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 		TreeList = {}
 		nodeWidth = 0
 		r(NodeLookup[workspace.Parent])
-		r(NodeLookup[DexOutput])
-		if DexStorageEnabled then
-			r(NodeLookup[DexStorage])
+		r(NodeLookup[Dev4Output])
+		if Dev4StorageEnabled then
+			r(NodeLookup[Dev4Storage])
 		end
 		if NilStorageEnabled then
 			r(NodeLookup[NilStorage])
@@ -2463,7 +2463,7 @@ local function parseData(obj, numTabs, isKey, overflow, noTables, forceDict)
 		local isCyclic = overflow[obj]
 		overflow[obj] = true
 		local out = {}
-		local nextIndex = 1
+		local nextInDev4 = 1
 		local isDict = false
 		local hasTables = false
 		local data = {}
@@ -2473,10 +2473,10 @@ local function parseData(obj, numTabs, isKey, overflow, noTables, forceDict)
 				hasTables = true
 			end
 
-			if not isDict and key ~= nextIndex then
+			if not isDict and key ~= nextInDev4 then
 				isDict = true
 			else
-				nextIndex = nextIndex + 1
+				nextInDev4 = nextInDev4 + 1
 			end
 
 			data[#data+1] = {key, val}
@@ -2797,7 +2797,7 @@ function rightClickMenu(sObj)
 			elseif option == 'Refresh Instances' then
 				if sObj == NilStorageMain then
 					for i, v in pairs(getnilinstances()) do
-						if v ~= DexOutput and v ~= DexOutputMain and v ~= DexStorage and v ~= DexStorageMain and v ~= RunningScriptsStorage and v ~= RunningScriptsStorageMain and v ~= LoadedModulesStorage and v ~= LoadedModulesStorageMain and v ~= NilStorage and v ~= NilStorageMain then
+						if v ~= Dev4Output and v ~= Dev4OutputMain and v ~= Dev4Storage and v ~= Dev4StorageMain and v ~= RunningScriptsStorage and v ~= RunningScriptsStorageMain and v ~= LoadedModulesStorage and v ~= LoadedModulesStorageMain and v ~= NilStorage and v ~= NilStorageMain then
 							pcall(function()
 								v:clone().Parent = NilStorageMain;
 							end)
@@ -2805,7 +2805,7 @@ function rightClickMenu(sObj)
 					end
 				elseif sObj == RunningScriptsStorageMain then
 					for i,v in pairs(getscripts()) do
-						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage and v ~= UpvalueStorage then
+						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= Dev4Storage and v ~= UpvalueStorage then
 							if (v:IsA'LocalScript' or v:IsA'ModuleScript' or v:IsA'Script') then
 								v.Archivable = true;
 								local ls = v:clone()
@@ -2816,7 +2816,7 @@ function rightClickMenu(sObj)
 					end
 				elseif sObj == LoadedModulesStorageMain then
 					for i,v in pairs(getloadedmodules()) do
-						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage and v ~= UpvalueStorage then
+						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= Dev4Storage and v ~= UpvalueStorage then
 							if (v:IsA'LocalScript' or v:IsA'ModuleScript' or v:IsA'Script') then
 								v.Archivable = true;
 								local ls = v:clone()
@@ -2848,7 +2848,7 @@ do
 		Transparency = 1;
 		AutoButtonColor = false;
 		Active = true;
-		ZIndex = 10;
+		ZInDev4 = 10;
 	})
 	local function dragSelect(last,add,button)
 		local connDrag
@@ -2859,9 +2859,9 @@ do
 			local size = listFrame.AbsoluteSize
 			if pos.x < 0 or pos.x > size.x or pos.y < 0 or pos.y > size.y then return end
 
-			local i = math.ceil(pos.y/ENTRY_BOUND) + scrollBar.ScrollIndex
+			local i = math.ceil(pos.y/ENTRY_BOUND) + scrollBar.ScrollInDev4
 			-- Mouse may have made a large step, so interpolate between the
-			-- last index and the current.
+			-- last inDev4 and the current.
 			for n = i<last and i or last, i>last and i or last do
 				local node = TreeList[n]
 				if node then
@@ -2892,7 +2892,7 @@ do
 		local conUp
 		local conUp2
 
-		local parentIndex = nil
+		local parentInDev4 = nil
 		local dragged = false
 
 		local parentHighlight = Create('Frame',{
@@ -2927,7 +2927,7 @@ do
 				Size = UDim2.new(0,1,1,0);
 			});
 		})
-		SetZIndex(parentHighlight,9)
+		SetZInDev4(parentHighlight,9)
 
 		conDrag = mouseDrag.MouseMoved:connect(function(x,y)
 			local dragPos = Vector2.new(x,y)
@@ -2935,13 +2935,13 @@ do
 				local pos = dragPos - listFrame.AbsolutePosition
 				local size = listFrame.AbsoluteSize
 
-				parentIndex = nil
+				parentInDev4 = nil
 				parentHighlight.Visible = false
 				if pos.x >= 0 and pos.x <= size.x and pos.y >= 0 and pos.y <= size.y + ENTRY_SIZE*2 then
 					local i = math.ceil(pos.y/ENTRY_BOUND-2)
-					local node = TreeList[i + scrollBar.ScrollIndex]
+					local node = TreeList[i + scrollBar.ScrollInDev4]
 					if node and node.Object ~= object and not object:IsAncestorOf(node.Object) then
-						parentIndex = i
+						parentInDev4 = i
 						local entry = listEntries[i]
 						if entry then
 							parentHighlight.Visible = true
@@ -2954,7 +2954,7 @@ do
 				dragGhost.Position = UDim2.new(0,dragPos.x+ghostOffset.x,0,dragPos.y+ghostOffset.y)
 			elseif (clickPos-dragPos).magnitude > 8 then
 				dragged = true
-				SetZIndex(dragGhost,9)
+				SetZInDev4(dragGhost,9)
 				dragGhost.IndentFrame.Transparency = 0.25
 				dragGhost.IndentFrame.EntryText.TextColor3 = GuiColor.TextSelected
 				dragGhost.Position = UDim2.new(0,dragPos.x+ghostOffset.x,0,dragPos.y+ghostOffset.y)
@@ -2981,8 +2981,8 @@ do
 		conUp = mouseDrag.MouseButton1Up:connect(function()
 			cancelReparentDrag()
 			if dragged then
-				if parentIndex then
-					local parentNode = TreeList[parentIndex + scrollBar.ScrollIndex]
+				if parentInDev4 then
+					local parentNode = TreeList[parentInDev4 + scrollBar.ScrollInDev4]
 					if parentNode then
 						parentNode.Expanded = true
 
@@ -3055,20 +3055,20 @@ do
 
 	function scrollBar.UpdateCallback(self)
 		for i = 1,self.VisibleSpace do
-			local node = TreeList[i + self.ScrollIndex]
+			local node = TreeList[i + self.ScrollInDev4]
 			if node then
 				local entry = listEntries[i]
 				if not entry then
 					entry = Create(entryTemplate:Clone(),{
 						Position = UDim2.new(0,2,0,ENTRY_BOUND*(i-1)+2);
 						Size = UDim2.new(0,nodeWidth,0,ENTRY_SIZE);
-						ZIndex = listFrame.ZIndex;
+						ZInDev4 = listFrame.ZInDev4;
 					})
 					listEntries[i] = entry
 
 					local expand = entry.IndentFrame.Expand
 					expand.MouseEnter:connect(function()
-						local node = TreeList[i + self.ScrollIndex]
+						local node = TreeList[i + self.ScrollInDev4]
 						if #node > 0 then
 							if node.Expanded then
 								Icon(expand,NODE_EXPANDED_OVER)
@@ -3078,7 +3078,7 @@ do
 						end
 					end)
 					expand.MouseLeave:connect(function()
-						local node = TreeList[i + self.ScrollIndex]
+						local node = TreeList[i + self.ScrollInDev4]
 						if #node > 0 then
 							if node.Expanded then
 								Icon(expand,NODE_EXPANDED)
@@ -3088,11 +3088,11 @@ do
 						end
 					end)
 					expand.MouseButton1Down:connect(function()
-						local node = TreeList[i + self.ScrollIndex]
+						local node = TreeList[i + self.ScrollInDev4]
 						if #node > 0 then
 							node.Expanded = not node.Expanded
 							if node.Object == explorerPanel.Parent and node.Expanded then
-								CreateCaution("Warning","Please be careful when editing instances inside here, this is like the System32 of Dex and modifying objects here can break Dex.")
+								CreateCaution("Warning","Please be careful when editing instances inside here, this is like the System32 of Dev4 and modifying objects here can break Dev4.")
 							end
 							-- use raw update so the list updates instantly
 							rawUpdateList()
@@ -3100,7 +3100,7 @@ do
 					end)
 
 					entry.MouseButton1Down:connect(function(x,y)
-						local node = TreeList[i + self.ScrollIndex]
+						local node = TreeList[i + self.ScrollInDev4]
 						DestroyRightClick()
 						if GetAwaitRemote:Invoke() then
 							bindSetAwaiting:Fire(node.Object)
@@ -3108,14 +3108,14 @@ do
 						end
 						
 						if not HoldingShift then
-							lastSelectedNode = i + self.ScrollIndex
+							lastSelectedNode = i + self.ScrollInDev4
 						end
 						
 						if HoldingShift and not filteringWorkspace() then
 							if lastSelectedNode then
-								if i + self.ScrollIndex - lastSelectedNode > 0 then
+								if i + self.ScrollInDev4 - lastSelectedNode > 0 then
 									Selection:StopUpdates()
-									for i2 = 1, i + self.ScrollIndex - lastSelectedNode do
+									for i2 = 1, i + self.ScrollInDev4 - lastSelectedNode do
 										local newNode = TreeList[lastSelectedNode + i2]
 										if newNode then
 											Selection:Add(newNode.Object)
@@ -3124,7 +3124,7 @@ do
 									Selection:ResumeUpdates()
 								else
 									Selection:StopUpdates()
-									for i2 = i + self.ScrollIndex - lastSelectedNode, 1 do
+									for i2 = i + self.ScrollInDev4 - lastSelectedNode, 1 do
 										local newNode = TreeList[lastSelectedNode + i2]
 										if newNode then
 											Selection:Add(newNode.Object)
@@ -3153,7 +3153,7 @@ do
 							else
 								Selection:Set({node.Object})
 							end
-							dragSelect(i+self.ScrollIndex,true,'MouseButton1Up')
+							dragSelect(i+self.ScrollInDev4,true,'MouseButton1Up')
 						end
 					end)
 
@@ -3164,7 +3164,7 @@ do
 						
 						curSelect = entry
 						
-						local node = TreeList[i + self.ScrollIndex]
+						local node = TreeList[i + self.ScrollInDev4]
 						
 						if GetAwaitRemote:Invoke() then
 							bindSetAwaiting:Fire(node.Object)
@@ -3180,7 +3180,7 @@ do
 					entry.MouseButton2Up:connect(function()
 						if not Option.Selectable then return end
 						
-						local node = TreeList[i + self.ScrollIndex]
+						local node = TreeList[i + self.ScrollInDev4]
 						
 						if checkMouseInGui(curSelect) then
 							rightClickMenu(node.Object)
@@ -3206,7 +3206,7 @@ do
 				end
 
 				-- update explorer icon
-				Icon(entry.IndentFrame.ExplorerIcon,ExplorerIndex[object.ClassName] or 0)
+				Icon(entry.IndentFrame.ExplorerIcon,ExplorerInDev4[object.ClassName] or 0)
 
 				-- update indentation
 				local w = (node.Depth)*(2+ENTRY_PADDING+GUI_SIZE)
@@ -3245,11 +3245,11 @@ do
 
 	function scrollBarH.UpdateCallback(self)
 		for i = 1,scrollBar.VisibleSpace do
-			local node = TreeList[i + scrollBar.ScrollIndex]
+			local node = TreeList[i + scrollBar.ScrollInDev4]
 			if node then
 				local entry = listEntries[i]
 				if entry then
-					entry.Position = UDim2.new(0,2 - scrollBarH.ScrollIndex,0,ENTRY_BOUND*(i-1)+2)
+					entry.Position = UDim2.new(0,2 - scrollBarH.ScrollInDev4,0,ENTRY_BOUND*(i-1)+2)
 				end
 			end
 		end
@@ -3264,16 +3264,16 @@ do
 	local wheelAmount = 6
 	explorerPanel.MouseWheelForward:connect(function()
 		if scrollBar.VisibleSpace - 1 > wheelAmount then
-			scrollBar:ScrollTo(scrollBar.ScrollIndex - wheelAmount)
+			scrollBar:ScrollTo(scrollBar.ScrollInDev4 - wheelAmount)
 		else
-			scrollBar:ScrollTo(scrollBar.ScrollIndex - scrollBar.VisibleSpace)
+			scrollBar:ScrollTo(scrollBar.ScrollInDev4 - scrollBar.VisibleSpace)
 		end
 	end)
 	explorerPanel.MouseWheelBackward:connect(function()
 		if scrollBar.VisibleSpace - 1 > wheelAmount then
-			scrollBar:ScrollTo(scrollBar.ScrollIndex + wheelAmount)
+			scrollBar:ScrollTo(scrollBar.ScrollInDev4 + wheelAmount)
 		else
-			scrollBar:ScrollTo(scrollBar.ScrollIndex + scrollBar.VisibleSpace)
+			scrollBar:ScrollTo(scrollBar.ScrollInDev4 + scrollBar.VisibleSpace)
 		end
 	end)
 end
@@ -3284,27 +3284,27 @@ end
 ----------------------------------------------------------------
 ---- Object detection
 
--- Inserts `v` into `t` at `i`. Also sets `Index` field in `v`.
+-- Inserts `v` into `t` at `i`. Also sets `InDev4` field in `v`.
 local function insert(t,i,v)
 	for n = #t,i,-1 do
 		local v = t[n]
-		v.Index = n+1
+		v.InDev4 = n+1
 		t[n+1] = v
 	end
-	v.Index = i
+	v.InDev4 = i
 	t[i] = v
 end
 
--- Removes `i` from `t`. Also sets `Index` field in removed value.
+-- Removes `i` from `t`. Also sets `InDev4` field in removed value.
 local function remove(t,i)
 	local v = t[i]
 	for n = i+1,#t do
 		local v = t[n]
-		v.Index = n-1
+		v.InDev4 = n-1
 		t[n-1] = v
 	end
 	t[#t] = nil
-	v.Index = 0
+	v.InDev4 = 0
 	return v
 end
 
@@ -3345,7 +3345,7 @@ local function removeObject(object)
 	Selection:Remove(object,true)
 
 	local parent = objectNode.Parent
-	remove(parent,objectNode.Index)
+	remove(parent,objectNode.InDev4)
 	NodeLookup[object] = nil
 	connLookup[object]:disconnect()
 	connLookup[object] = nil
@@ -3372,7 +3372,7 @@ local function moveObject(object,parent)
 
 	local visible = nodeIsVisible(objectNode)
 
-	remove(objectNode.Parent,objectNode.Index)
+	remove(objectNode.Parent,objectNode.InDev4)
 	objectNode.Parent = parentNode
 
 	objectNode.Depth = depth(object)
@@ -3444,7 +3444,7 @@ for i, v in ipairs(InstanceBlacklist) do
 end
 
 -- ScriptContext['/Libraries/LibraryRegistration/LibraryRegistration']
--- This RobloxLocked object lets me index its properties for some reason
+-- This RobloxLocked object lets me inDev4 its properties for some reason
 
 local function check(object)
 	return object.AncestryChanged
@@ -3475,7 +3475,7 @@ local function addObject(object,noupdate)
 	local objectNode = {
 		Object = object;
 		Parent = parentNode;
-		Index = 0;
+		InDev4 = 0;
 		Expanded = false;
 		Selected = false;
 		Depth = depth(object);
@@ -3528,47 +3528,47 @@ end
 
 
 
-local dexStorageDebounce = false
-local dexStorageListeners = {}
+local Dev4StorageDebounce = false
+local Dev4StorageListeners = {}
 
-local function updateDexStorage()
-	if dexStorageDebounce then return end
-	dexStorageDebounce = true	
+local function updateDev4Storage()
+	if Dev4StorageDebounce then return end
+	Dev4StorageDebounce = true	
 	
 	wait()
 	
 	pcall(function()
-		-- saveinstance("content//DexStorage.rbxm",DexStorageMain)
+		-- saveinstance("content//Dev4Storage.rbxm",Dev4StorageMain)
 	end)
 	
-	updateDexStorageListeners()
+	updateDev4StorageListeners()
 	
-	dexStorageDebounce = false
+	Dev4StorageDebounce = false
 	--[[
 	local success,err = ypcall(function()
 		local objs = {}
-		for i,v in pairs(DexStorageMain:GetChildren()) do
+		for i,v in pairs(Dev4StorageMain:GetChildren()) do
 			table.insert(objs,writeObject(v))
 		end
-		writefile(getelysianpath().."DexStorage.txt",game:GetService("HttpService"):JSONEncode(objs))
-		--game:GetService("CookiesService"):SetCookieValue("DexStorage",game:GetService("HttpService"):JSONEncode(objs))
+		writefile(getelysianpath().."Dev4Storage.txt",game:GetService("HttpService"):JSONEncode(objs))
+		--game:GetService("CookiesService"):SetCookieValue("Dev4Storage",game:GetService("HttpService"):JSONEncode(objs))
 	end)
 	if err then
-		CreateCaution("DexStorage Save Fail!","DexStorage broke! If you see this message, report to Raspberry Pi!")
+		CreateCaution("Dev4Storage Save Fail!","Dev4Storage broke! If you see this message, report to Raspberry Pi!")
 	end
 	print("hi")
 	--]]
 end
 
-function updateDexStorageListeners()
-	for i,v in pairs(dexStorageListeners) do
+function updateDev4StorageListeners()
+	for i,v in pairs(Dev4StorageListeners) do
 		v:Disconnect()
 	end
-	dexStorageListeners = {}
-	for i,v in pairs(DexStorageMain:GetChildren()) do
+	Dev4StorageListeners = {}
+	for i,v in pairs(Dev4StorageMain:GetChildren()) do
 		pcall(function()
-			local ev = v.Changed:connect(updateDexStorage)
-			table.insert(dexStorageListeners,ev)
+			local ev = v.Changed:connect(updateDev4Storage)
+			table.insert(Dev4StorageListeners,ev)
 		end)
 	end
 end
@@ -3577,22 +3577,22 @@ do
 	NodeLookup[workspace.Parent] = {
 		Object = workspace.Parent;
 		Parent = nil;
-		Index = 0;
+		InDev4 = 0;
 		Expanded = true;
 	}
 	
-	NodeLookup[DexOutput] = {
-		Object = DexOutput;
+	NodeLookup[Dev4Output] = {
+		Object = Dev4Output;
 		Parent = nil;
-		Index = 0;
+		InDev4 = 0;
 		Expanded = true;
 	}
 	
-	if DexStorageEnabled then
-		NodeLookup[DexStorage] = {
-			Object = DexStorage;
+	if Dev4StorageEnabled then
+		NodeLookup[Dev4Storage] = {
+			Object = Dev4Storage;
 			Parent = nil;
-			Index = 0;
+			InDev4 = 0;
 			Expanded = true;
 		}
 	end
@@ -3601,7 +3601,7 @@ do
 		NodeLookup[NilStorage] = {
 			Object = NilStorage;
 			Parent = nil;
-			Index = 0;
+			InDev4 = 0;
 			Expanded = true;
 		}
 	end
@@ -3610,7 +3610,7 @@ do
 		NodeLookup[RunningScriptsStorage] = {
 			Object = RunningScriptsStorage;
 			Parent = nil;
-			Index = 0;
+			InDev4 = 0;
 			Expanded = true;
 		}
 	end
@@ -3619,7 +3619,7 @@ do
 		NodeLookup[LoadedModulesStorage] = {
 			Object = LoadedModulesStorage;
 			Parent = nil;
-			Index = 0;
+			InDev4 = 0;
 			Expanded = true;
 		}
 	end
@@ -3627,8 +3627,8 @@ do
 	Connect(game.DescendantAdded,addObject)
 	Connect(game.DescendantRemoving,removeObject)
 	
-	Connect(DexOutput.DescendantAdded,addObject)
-	Connect(DexOutput.DescendantRemoving,removeObject)
+	Connect(Dev4Output.DescendantAdded,addObject)
+	Connect(Dev4Output.DescendantRemoving,removeObject)
 	
 	if NilStorageEnabled then
 		Connect(NilStorage.DescendantAdded,addObject)
@@ -3642,7 +3642,7 @@ do
 					currentTable = get_nil_instances()
 					--NilStorageMain:ClearAllChildren()
 					for i,v in pairs(get_nil_instances()) do
-						if v ~= NilStorage and v ~= DexStorage then
+						if v ~= NilStorage and v ~= Dev4Storage then
 							pcall(function()
 								v.Parent = NilStorageMain
 							end)
@@ -3680,9 +3680,9 @@ do
 	end
 
 	r(workspace.Parent)
-	r(DexOutput)
-	if DexStorageEnabled then
-		r(DexStorage)
+	r(Dev4Output)
+	if Dev4StorageEnabled then
+		r(Dev4Storage)
 	end
 	if NilStorageEnabled then
 		r(NilStorage)
